@@ -1,0 +1,28 @@
+version: '3'
+
+services:
+  db:
+    image: postgres:12
+    environment:
+      POSTGRES_DB: northwind
+      POSTGRES_USER: northwind_user
+      POSTGRES_PASSWORD: thewindisblowing
+    volumes:
+      - ./dbdata:/var/lib/postgresql/data
+      - ./data/northwind.sql:/docker-entrypoint-initdb.d/northwind.sql
+    ports:
+      - 5432:5432
+
+  mysql_db:
+    image: mysql:8.0
+    environment:
+      MYSQL_DATABASE: northwind_complete
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+      MYSQL_ROOT_PASSWORD: root
+    command: mysqld --sql_mode="" --init-connect='SET NAMES UTF8;' --innodb-flush-log-at-trx-commit=0
+    volumes:
+      - ./mysqldata/data:/var/lib/mysql
+      - ./data/mysql.sql:/docker-entrypoint-initdb.d/mysql.sql
+    ports:
+      - 3333:3306
