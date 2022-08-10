@@ -1,2 +1,4 @@
 /dbdata
-/dbdata_sol
+/mysqldata
+data/POSTGRES/
+data/CSV
