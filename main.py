@@ -1,10 +1,11 @@
 # imports ------------------
-from datetime import date
 from steps import step1PG
 from steps import step1CSV
 from steps import step2toDB
-import pandas as pd
 from conn import conn
+from os import path
+from datetime import date
+import pandas as pd
 # --------------------------
 
 # functions ----------------
@@ -16,7 +17,11 @@ def getdate():  # Get user date for program running
     userDate = input(WRITE_DATE)
     if userDate == '':
         return today
-    userDate = date.fromisoformat(userDate)
+    try:
+        userDate = date.fromisoformat(userDate)
+    except ValueError:
+        print("Your entry is invalid, using today's date instead!")
+        userDate = today
     return userDate
 
 
@@ -32,21 +37,40 @@ def step1CSVFile():  # step 1 for CSV
     print("\nStep 1 - CSV - FINISHED")
 
 
+flag = 0  # flag to block user from choosing queries before step 2
+
+
 def step2DB():  # step 2
-    step2toDB.localToDB()
-    print("\nStep 2 - FINISHED")
+    global flag
+    userDate = getdate()
+    postExists = r"./data/POSTGRES/categories/{}"
+    CSVExists = r"./data/CSV/{}"
+    if (path.exists(postExists.format(userDate)) and path.exists(CSVExists.format(userDate))):
+        step2toDB.localToDB()
+        flag += 1
+        print("\nStep 2 - FINISHED")
+    else:
+        print("\nPlease finish Step1 for POSTGRES and CSV files before entering Step 2")
 
 
 def testQueryProd():
-    engine = conn.connMySql()
-    products = pd.read_sql("SELECT * FROM products", con=engine)
-    print(products)
+    if flag < 1:
+        print("\nPlease finish Steps 1 and 2 before entering Queries")
+    else:
+        engine = conn.connMySql()
+        products = pd.read_sql("SELECT * FROM products", con=engine)
+        print("\nQuery: SELECT * FROM products")
+        print(products)
 
 
 def testQueryOrdDet():
-    engine = conn.connMySql()
-    details = pd.read_sql("SELECT * FROM order_details", con=engine)
-    print(details)
+    if flag < 1:
+        print("\nPlease finish Steps 1 and 2 before entering Queries")
+    else:
+        engine = conn.connMySql()
+        details = pd.read_sql("SELECT * FROM order_details", con=engine)
+        print("\nQuery: SELECT * FROM order_details")
+        print(details)
 # --------------------------
 
 

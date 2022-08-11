@@ -1,7 +1,6 @@
-import pandas as pd
-import os
-from sqlalchemy import create_engine
 from conn import conn
+import os
+import pandas as pd
 
 
 def localToDB():
@@ -26,6 +25,3 @@ def localToDB():
             df.to_sql(table_name, con=engine,
                       index=False, if_exists="replace")
             print(f"{filepath} written successfully")
-
-    orders = pd.read_sql("SELECT * FROM orders", con=engine)
-    details = pd.read_sql("SELECT * FROM order_details", engine)
